@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BnplPartners\Factoring004;
 
+use BnplPartners\Factoring004\Applications\ApplicationResource;
 use BnplPartners\Factoring004\Auth\AuthenticationInterface;
 use BnplPartners\Factoring004\ChangeStatus\ChangeStatusResource;
 use BnplPartners\Factoring004\Otp\OtpResource;
@@ -22,6 +23,7 @@ class Api
     private PreAppResource $preApps;
     private OtpResource $otp;
     private ChangeStatusResource $changeStatus;
+    private ApplicationResource $applications;
 
     public function __construct(
         string $baseUri,
@@ -33,6 +35,7 @@ class Api
         $this->preApps = new PreAppResource($transport, $baseUri, $authentication);
         $this->otp = new OtpResource($transport, $baseUri, $authentication);
         $this->changeStatus = new ChangeStatusResource($transport, $baseUri, $authentication);
+        $this->applications = new ApplicationResource($transport, $baseUri, $authentication);
     }
 
     public static function create(
@@ -55,6 +58,10 @@ class Api
 
         if ($name === 'changeStatus') {
             return $this->changeStatus;
+        }
+
+        if ($name === 'applications') {
+            return $this->applications;
         }
 
         throw new OutOfBoundsException("Property {$name} does not exist");
