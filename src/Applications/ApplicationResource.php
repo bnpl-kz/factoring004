@@ -89,6 +89,30 @@ class ApplicationResource extends AbstractResource
     }
 
     /**
+     * @throws \BnplPartners\Factoring004\Exception\NetworkException
+     * @throws EndpointUnavailableException
+     * @throws \BnplPartners\Factoring004\Exception\DataSerializationException
+     * @throws \BnplPartners\Factoring004\Exception\TransportException
+     */
+    public function canceled(ApplicationCanceled $applicationCanceled): ApplicationResponse
+    {
+        $response = $this->request(
+            'PUT',
+            '/accountingservice/1.0/applications/'.
+            $applicationCanceled->getMerchantId().'/'.
+            $applicationCanceled->getMerchantOrderId().'/canceled',
+        );
+
+        if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
+            return new ApplicationResponse($response->getBody());
+        }
+
+        $this->handleClientError($response);
+
+        throw new EndpointUnavailableException($response);
+    }
+
+    /**
      * @throws \BnplPartners\Factoring004\Exception\AuthenticationException
      * @throws \BnplPartners\Factoring004\Exception\ErrorResponseException
      * @throws \BnplPartners\Factoring004\Exception\UnexpectedResponseException

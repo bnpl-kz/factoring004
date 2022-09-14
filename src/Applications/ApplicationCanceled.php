@@ -6,7 +6,7 @@ namespace BnplPartners\Factoring004\Applications;
 
 use BnplPartners\Factoring004\ArrayInterface;
 
-class ApplicationDelivered implements ArrayInterface
+class ApplicationCanceled implements ArrayInterface
 {
     private string $merchantId;
     private string $merchantOrderId;
