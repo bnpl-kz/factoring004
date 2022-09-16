@@ -390,6 +390,57 @@ var_dump($response->toArray(), json_encode($response));
 
 ```
 
+## Call endpoints for Applications
+
+FullReturn
+
+```php
+use BnplPartners\Factoring004\Applications\ApplicationFullReturn;
+
+$orders = new ApplicationFullReturn('1', '1');
+
+// send request and receive response
+$response = $api->applications->fullReturn($orders);
+
+var_dump($response);
+```
+
+PartialReturn
+
+```php
+use BnplPartners\Factoring004\Applications\ApplicationPartialReturn;
+
+$orders = new ApplicationPartialReturn(6000, '1', '1');
+
+// send request and receive response
+$response = $api->applications->partialReturn($orders);
+
+var_dump($response);
+```
+Delivered
+
+```php
+use BnplPartners\Factoring004\Applications\ApplicationDelivered;
+
+$orders = new ApplicationPartialReturn('1', '1');
+
+// send request and receive response
+$response = $api->applications->delivered($orders);
+
+var_dump($response);
+```
+Canceled
+
+```php
+use BnplPartners\Factoring004\Applications\ApplicationCanceled;
+
+$orders = new ApplicationPartialReturn('1', '1');
+
+// send request and receive response
+$response = $api->applications->canceled($orders);
+
+var_dump($response);
+```
 
 ### Error handling
 
