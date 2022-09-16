@@ -19,7 +19,7 @@ interface ResponseInterface
     public function getHeaders(): array;
 
     /**
-     * @return array<array-key, T>
+     * @return T
      */
-    public function getBody(): array;
+    public function getBody();
 }

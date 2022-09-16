@@ -21,15 +21,15 @@ class Response implements ResponseInterface
     private array $headers;
 
     /**
-     * @var array<array-key, T>
+     * @var T
      */
-    private array $body;
+    private $body;
 
     /**
      * @param array<string, string> $headers
-     * @param array<array-key, T> $body
+     * @param T $body
      */
-    public function __construct(int $statusCode, array $headers, array $body = [])
+    public function __construct(int $statusCode, array $headers, $body = null)
     {
         $this->statusCode = $statusCode;
         $this->headers = $headers;
@@ -69,7 +69,7 @@ class Response implements ResponseInterface
         return $this->headers;
     }
 
-    public function getBody(): array
+    public function getBody()
     {
         return $this->body;
     }

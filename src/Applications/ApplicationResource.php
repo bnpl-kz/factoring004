@@ -16,9 +16,14 @@ class ApplicationResource extends AbstractResource
 {
 
     /**
-     * @throws \BnplPartners\Factoring004\Exception\NetworkException
+     * @param ApplicationPartialReturn $applicationPartialReturn
+     * @return ApplicationResponse
+     * @throws AuthenticationException
      * @throws EndpointUnavailableException
+     * @throws ErrorResponseException
+     * @throws UnexpectedResponseException
      * @throws \BnplPartners\Factoring004\Exception\DataSerializationException
+     * @throws \BnplPartners\Factoring004\Exception\NetworkException
      * @throws \BnplPartners\Factoring004\Exception\TransportException
      */
     public function partialReturn(ApplicationPartialReturn $applicationPartialReturn): ApplicationResponse
@@ -41,9 +46,14 @@ class ApplicationResource extends AbstractResource
     }
 
     /**
-     * @throws \BnplPartners\Factoring004\Exception\NetworkException
+     * @param ApplicationFullReturn $applicationFullReturn
+     * @return ApplicationResponse
+     * @throws AuthenticationException
      * @throws EndpointUnavailableException
+     * @throws ErrorResponseException
+     * @throws UnexpectedResponseException
      * @throws \BnplPartners\Factoring004\Exception\DataSerializationException
+     * @throws \BnplPartners\Factoring004\Exception\NetworkException
      * @throws \BnplPartners\Factoring004\Exception\TransportException
      */
     public function fullReturn(ApplicationFullReturn $applicationFullReturn): ApplicationResponse
@@ -65,9 +75,14 @@ class ApplicationResource extends AbstractResource
     }
 
     /**
-     * @throws \BnplPartners\Factoring004\Exception\NetworkException
+     * @param ApplicationDelivered $applicationDelivered
+     * @return ApplicationResponse
+     * @throws AuthenticationException
      * @throws EndpointUnavailableException
+     * @throws ErrorResponseException
+     * @throws UnexpectedResponseException
      * @throws \BnplPartners\Factoring004\Exception\DataSerializationException
+     * @throws \BnplPartners\Factoring004\Exception\NetworkException
      * @throws \BnplPartners\Factoring004\Exception\TransportException
      */
     public function delivered(ApplicationDelivered $applicationDelivered): ApplicationResponse
@@ -89,9 +104,14 @@ class ApplicationResource extends AbstractResource
     }
 
     /**
-     * @throws \BnplPartners\Factoring004\Exception\NetworkException
+     * @param ApplicationCanceled $applicationCanceled
+     * @return ApplicationResponse
+     * @throws AuthenticationException
      * @throws EndpointUnavailableException
+     * @throws ErrorResponseException
+     * @throws UnexpectedResponseException
      * @throws \BnplPartners\Factoring004\Exception\DataSerializationException
+     * @throws \BnplPartners\Factoring004\Exception\NetworkException
      * @throws \BnplPartners\Factoring004\Exception\TransportException
      */
     public function canceled(ApplicationCanceled $applicationCanceled): ApplicationResponse
