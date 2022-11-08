@@ -21,7 +21,8 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "BnplPartners\\Factoring004\\": "src/"
+            "BnplPartners\\Factoring004\\": "src/",
+            "BnplPartners\\Factoring004RectorRules\\": "rector/rules"
         }
     },
     "autoload-dev": {
