@@ -8,13 +8,12 @@ use BnplPartners\Factoring004\Exception\AuthenticationException;
 use BnplPartners\Factoring004\Exception\ErrorResponseException;
 use BnplPartners\Factoring004\Exception\UnexpectedResponseException;
 use BnplPartners\Factoring004\Response\ErrorResponse;
-use BnplPartners\Factoring004\Transport\PsrTransport;
+use BnplPartners\Factoring004\Transport\GuzzleTransport;
 use BnplPartners\Factoring004\Transport\Response as TransportResponse;
 use BnplPartners\Factoring004\Transport\TransportInterface;
-use GuzzleHttp\Psr7\HttpFactory;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Client\ClientInterface;
 
 abstract class AbstractResourceTest extends TestCase
 {
@@ -33,7 +32,7 @@ abstract class AbstractResourceTest extends TestCase
         ];
 
         $client = $this->createStub(ClientInterface::class);
-        $client->method('sendRequest')
+        $client->method('send')
             ->willReturn(new Response(405, ['Content-Type' => 'application/json'], json_encode($data)));
 
         try {
@@ -60,7 +59,7 @@ abstract class AbstractResourceTest extends TestCase
         ];
 
         $client = $this->createStub(ClientInterface::class);
-        $client->method('sendRequest')
+        $client->method('send')
             ->willReturn(new Response(405, ['Content-Type' => 'application/json'], json_encode($data)));
 
         try {
@@ -84,7 +83,7 @@ abstract class AbstractResourceTest extends TestCase
         ];
 
         $client = $this->createStub(ClientInterface::class);
-        $client->method('sendRequest')
+        $client->method('send')
             ->willReturn(new Response(401, ['Content-Type' => 'application/json'], json_encode($data)));
 
         try {
@@ -110,7 +109,7 @@ abstract class AbstractResourceTest extends TestCase
         ];
 
         $client = $this->createStub(ClientInterface::class);
-        $client->method('sendRequest')
+        $client->method('send')
             ->willReturn(new Response(401, ['Content-Type' => 'application/json'], json_encode($data)));
 
         try {
@@ -134,7 +133,7 @@ abstract class AbstractResourceTest extends TestCase
         ];
 
         $client = $this->createStub(ClientInterface::class);
-        $client->method('sendRequest')
+        $client->method('send')
             ->willReturn(new Response(401, ['Content-Type' => 'application/json'], json_encode($data)));
 
         try {
@@ -160,7 +159,7 @@ abstract class AbstractResourceTest extends TestCase
         ];
 
         $client = $this->createStub(ClientInterface::class);
-        $client->method('sendRequest')
+        $client->method('send')
             ->willReturn(new Response(401, ['Content-Type' => 'application/json'], json_encode($data)));
 
         try {
@@ -184,7 +183,7 @@ abstract class AbstractResourceTest extends TestCase
         ];
 
         $client = $this->createStub(ClientInterface::class);
-        $client->method('sendRequest')
+        $client->method('send')
             ->willReturn(new Response(401, ['Content-Type' => 'application/json'], json_encode($data)));
 
         try {
@@ -210,7 +209,7 @@ abstract class AbstractResourceTest extends TestCase
         ];
 
         $client = $this->createStub(ClientInterface::class);
-        $client->method('sendRequest')
+        $client->method('send')
             ->willReturn(new Response(401, ['Content-Type' => 'application/json'], json_encode($data)));
 
         try {
@@ -234,7 +233,7 @@ abstract class AbstractResourceTest extends TestCase
         ];
 
         $client = $this->createStub(ClientInterface::class);
-        $client->method('sendRequest')
+        $client->method('send')
             ->willReturn(new Response(403, ['Content-Type' => 'application/json'], json_encode($data)));
 
         try {
@@ -260,7 +259,7 @@ abstract class AbstractResourceTest extends TestCase
         ];
 
         $client = $this->createStub(ClientInterface::class);
-        $client->method('sendRequest')
+        $client->method('send')
             ->willReturn(new Response(403, ['Content-Type' => 'application/json'], json_encode($data)));
 
         try {
@@ -285,7 +284,7 @@ abstract class AbstractResourceTest extends TestCase
         ];
 
         $client = $this->createStub(ClientInterface::class);
-        $client->method('sendRequest')
+        $client->method('send')
             ->willReturn(new Response(400, ['Content-Type' => 'application/json'], json_encode($data)));
 
         try {
@@ -310,7 +309,7 @@ abstract class AbstractResourceTest extends TestCase
         ];
 
         $client = $this->createStub(ClientInterface::class);
-        $client->method('sendRequest')
+        $client->method('send')
             ->willReturn(new Response(400, ['Content-Type' => 'application/json'], json_encode($data)));
 
         try {
@@ -338,7 +337,7 @@ abstract class AbstractResourceTest extends TestCase
         $client = $this->createStub(ClientInterface::class);
         $response = new Response($status, ['Content-Type' => 'application/json'], json_encode($data));
 
-        $client->method('sendRequest')->willReturn($response);
+        $client->method('send')->willReturn($response);
 
         try {
             $this->callResourceMethod($client);
@@ -361,11 +360,6 @@ abstract class AbstractResourceTest extends TestCase
 
     protected function createTransport(ClientInterface $client): TransportInterface
     {
-        return new PsrTransport(
-            new HttpFactory(),
-            new HttpFactory(),
-            new HttpFactory(),
-            $client,
-        );
+        return new GuzzleTransport($client);
     }
 }

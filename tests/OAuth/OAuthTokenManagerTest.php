@@ -6,14 +6,13 @@ namespace BnplPartners\Factoring004\OAuth;
 
 use BadMethodCallException;
 use BnplPartners\Factoring004\Exception\OAuthException;
-use BnplPartners\Factoring004\Transport\PsrTransport;
+use BnplPartners\Factoring004\Transport\GuzzleTransport;
 use BnplPartners\Factoring004\Transport\TransportInterface;
-use GuzzleHttp\Psr7\HttpFactory;
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Psr7\Response;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Client\ClientExceptionInterface;
-use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 
 class OAuthTokenManagerTest extends TestCase
@@ -56,7 +55,7 @@ class OAuthTokenManagerTest extends TestCase
 
         $client = $this->createMock(ClientInterface::class);
         $client->expects($this->once())
-            ->method('sendRequest')
+            ->method('send')
             ->with($this->callback(function (RequestInterface $request) use ($consumerSecret, $consumerKey, $data) {
                 return $request->getMethod() === 'POST'
                     && $request->getUri()->getAuthority() === 'example.com'
@@ -87,9 +86,9 @@ class OAuthTokenManagerTest extends TestCase
     {
         $client = $this->createMock(ClientInterface::class);
         $client->expects($this->once())
-            ->method('sendRequest')
+            ->method('send')
             ->withAnyParameters()
-            ->willThrowException($this->createStub(ClientExceptionInterface::class));
+            ->willThrowException($this->createStub(TransferException::class));
 
         $manager = new OAuthTokenManager(
             'http://example.com',
@@ -109,7 +108,7 @@ class OAuthTokenManagerTest extends TestCase
     {
         $client = $this->createMock(ClientInterface::class);
         $client->expects($this->once())
-            ->method('sendRequest')
+            ->method('send')
             ->withAnyParameters()
             ->willReturn(new Response(400, [], json_encode([])));
 
@@ -142,12 +141,7 @@ class OAuthTokenManagerTest extends TestCase
 
     public function createTransport(ClientInterface $client): TransportInterface
     {
-        return new PsrTransport(
-            new HttpFactory(),
-            new HttpFactory(),
-            new HttpFactory(),
-            $client
-        );
+        return new GuzzleTransport($client);
     }
 }
 

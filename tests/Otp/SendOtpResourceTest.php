@@ -7,7 +7,7 @@ namespace BnplPartners\Factoring004\Otp;
 use BnplPartners\Factoring004\AbstractResourceTest;
 use BnplPartners\Factoring004\Transport\Response;
 use BnplPartners\Factoring004\Transport\TransportInterface;
-use Psr\Http\Client\ClientInterface;
+use GuzzleHttp\ClientInterface;
 
 class SendOtpResourceTest extends AbstractResourceTest
 {
