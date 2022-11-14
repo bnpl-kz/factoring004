@@ -16,9 +16,9 @@
 
 ## Requirements
 
-- PHP >=7.4
+- PHP >=5.6
 - JSON extension
-- PSR-17, PSR-18 implementations
+- PSR-17, PSR-18 implementations (optional and PHP >=7.x only)
 
 ## Installation
 
