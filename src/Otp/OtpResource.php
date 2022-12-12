@@ -23,7 +23,7 @@ class OtpResource extends AbstractResource
      */
     public function checkOtp(CheckOtp $otp)
     {
-        $response = $this->postRequest('/accountingservice/1.0/checkOtp', $otp->toArray());
+        $response = $this->postRequest('/accounting/checkOtp', $otp->toArray());
 
         if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
             return DtoOtp::createFromArray($response->getBody());
@@ -45,7 +45,7 @@ class OtpResource extends AbstractResource
      */
     public function sendOtp(SendOtp $otp)
     {
-        $response = $this->postRequest('/accountingservice/1.0/sendOtp', $otp->toArray());
+        $response = $this->postRequest('/accounting/sendOtp', $otp->toArray());
 
         if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
             return DtoOtp::createFromArray($response->getBody());
@@ -67,7 +67,7 @@ class OtpResource extends AbstractResource
      */
     public function checkOtpReturn(CheckOtpReturn $otp)
     {
-        $response = $this->postRequest('/accountingservice/1.0/checkOtpReturn', $otp->toArray());
+        $response = $this->postRequest('/accounting/checkOtpReturn', $otp->toArray());
 
         if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
             return DtoOtp::createFromArray($response->getBody());
@@ -89,7 +89,7 @@ class OtpResource extends AbstractResource
      */
     public function sendOtpReturn(SendOtpReturn $otp)
     {
-        $response = $this->postRequest('/accountingservice/1.0/sendOtpReturn', $otp->toArray());
+        $response = $this->postRequest('/accounting/sendOtpReturn', $otp->toArray());
 
         if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
             return DtoOtp::createFromArray($response->getBody());

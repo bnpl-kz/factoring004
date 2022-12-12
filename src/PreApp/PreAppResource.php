@@ -28,7 +28,7 @@ class PreAppResource extends AbstractResource
      */
     public function preApp(PreAppMessage $data)
     {
-        $response = $this->postRequest('/bnpl-partners/1.0/preapp', $data->toArray());
+        $response = $this->postRequest('/bnpl/v2/preapp', $data->toArray());
 
         if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
             return PreAppResponse::createFromArray($response->getBody()['data']);
