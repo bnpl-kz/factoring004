@@ -23,7 +23,7 @@ class CheckOtpReturnResourceTest extends AbstractResourceTest
         $transport = $this->createMock(TransportInterface::class);
         $transport->expects($this->once())
             ->method('request')
-            ->with('POST', '/accountingservice/1.0/checkOtpReturn', $otp->toArray(), [])
+            ->with('POST', '/accounting/checkOtpReturn', $otp->toArray(), [])
             ->willReturn(new Response(200, [], ['msg' => 'OK']));
 
         $resource = new OtpResource($transport, static::BASE_URI);
