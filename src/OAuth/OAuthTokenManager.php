@@ -14,6 +14,7 @@ use InvalidArgumentException;
 class OAuthTokenManager implements OAuthTokenManagerInterface
 {
     public const ACCESS_PATH = '/sign-in';
+    public const REFRESH_PATH = '/refresh';
 
     private TransportInterface $transport;
     private string $baseUri;
@@ -46,15 +47,31 @@ class OAuthTokenManager implements OAuthTokenManagerInterface
 
     public function getAccessToken(): OAuthToken
     {
+        return $this->manageToken(static::ACCESS_PATH, [
+            'username' => $this->username,
+            'password' => $this->password,
+        ]);
+    }
+
+    public function refreshToken(string $refreshToken): OAuthToken
+    {
+        return $this->manageToken(static::REFRESH_PATH, compact('refreshToken'));
+    }
+
+    public function revokeToken(): void
+    {
+        throw new BadMethodCallException('Method ' . __FUNCTION__ . ' is not supported');
+    }
+
+    /**
+     * @throws \BnplPartners\Factoring004\Exception\OAuthException
+     */
+    private function manageToken(string $path, array $data = []): OAuthToken
+    {
         $this->transport->setBaseUri($this->baseUri);
 
         try {
-            $response = $this->transport->post(static::ACCESS_PATH, [
-                'username' => $this->username,
-                'password' => $this->password,
-            ], [
-                'Content-Type' => 'application/json',
-            ]);
+            $response = $this->transport->post($path, $data, ['Content-Type' => 'application/json']);
         } catch (TransportException $e) {
             throw new OAuthException('Cannot generate an access token', 0, $e);
         }
@@ -64,10 +81,5 @@ class OAuthTokenManager implements OAuthTokenManagerInterface
         }
 
         throw new OAuthException($response->getBody()['message'] ?? 'Cannot generate an access token');
-    }
-
-    public function revokeToken(): void
-    {
-        throw new BadMethodCallException('Method ' . __FUNCTION__ . ' is not supported');
     }
 }

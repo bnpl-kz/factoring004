@@ -123,6 +123,86 @@ class OAuthTokenManagerTest extends TestCase
     /**
      * @throws \BnplPartners\Factoring004\Exception\OAuthException
      */
+    public function testRefreshToken(): void
+    {
+        $refreshToken = 'dG9rZW4=';
+        $responseData = [
+            'access' => 'dGVzdA==',
+            'accessExpiresAt' => 300,
+            'refresh' => 'dGVzdDE=',
+            'refreshExpiresAt' => 3600,
+        ];
+
+        $client = $this->createMock(ClientInterface::class);
+        $client->expects($this->once())
+            ->method('send')
+            ->with($this->callback(function (RequestInterface $request) use ($refreshToken) {
+                return $request->getMethod() === 'POST'
+                    && $request->getUri()->getAuthority() === 'example.com'
+                    && $request->getUri()->getScheme() === 'http'
+                    && $request->getUri()->getPath() === OAuthTokenManager::REFRESH_PATH
+                    && $request->getHeaderLine('Content-Type') === 'application/json'
+                    && strval($request->getBody()) === json_encode(compact('refreshToken'));
+            }))
+            ->willReturn(new Response(200, [], json_encode($responseData)));
+
+        $manager = new OAuthTokenManager(
+            'http://example.com',
+            'test',
+            'password',
+            $this->createTransport($client),
+        );
+
+        $this->assertEquals(OAuthToken::createFromArray($responseData), $manager->refreshToken($refreshToken));
+    }
+
+    /**
+     * @throws \BnplPartners\Factoring004\Exception\OAuthException
+     */
+    public function testRefreshTokenFailed(): void
+    {
+        $client = $this->createMock(ClientInterface::class);
+        $client->expects($this->once())
+            ->method('send')
+            ->withAnyParameters()
+            ->willThrowException($this->createStub(TransferException::class));
+
+        $manager = new OAuthTokenManager(
+            'http://example.com',
+            'test',
+            'password',
+            $this->createTransport($client),
+        );
+
+        $this->expectException(OAuthException::class);
+        $manager->refreshToken('dG9rZW4=');
+    }
+
+    /**
+     * @throws \BnplPartners\Factoring004\Exception\OAuthException
+     */
+    public function testRefreshTokenFailedWithUnexpectedResponse(): void
+    {
+        $client = $this->createMock(ClientInterface::class);
+        $client->expects($this->once())
+            ->method('send')
+            ->withAnyParameters()
+            ->willReturn(new Response(400, [], json_encode([])));
+
+        $manager = new OAuthTokenManager(
+            'http://example.com',
+            'test',
+            'password',
+            $this->createTransport($client),
+        );
+
+        $this->expectException(OAuthException::class);
+        $manager->refreshToken('dG9rZW4=');
+    }
+
+    /**
+     * @throws \BnplPartners\Factoring004\Exception\OAuthException
+     */
     public function testRevokeToken(): void
     {
         $manager = new OAuthTokenManager(
