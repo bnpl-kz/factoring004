@@ -120,10 +120,8 @@ class OtpResource extends AbstractResource
                 throw new UnexpectedResponseException($response, $data['message'] ?? 'Unexpected response schema');
             }
 
-            $code = (int) $data['code'];
-
-            if (in_array($code, static::AUTH_ERROR_CODES, true)) {
-                throw new AuthenticationException($data['description'] ?? '', $data['message'] ?? '', $code);
+            if ($response->getStatusCode() === 401) {
+                throw new AuthenticationException('', $data['message'] ?? '', $data['code']);
             }
 
             /** @psalm-suppress ArgumentTypeCoercion */

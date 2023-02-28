@@ -29,7 +29,7 @@ class PreAppResource extends AbstractResource
      */
     public function preApp(PreAppMessage $data): PreAppResponse
     {
-        $response = $this->postRequest('/bnpl/v2/preapp', $data->toArray());
+        $response = $this->postRequest('/bnpl/v2/private/preapp', $data->toArray());
 
         if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
             return PreAppResponse::createFromArray($response->getBody()['data']);
@@ -68,10 +68,8 @@ class PreAppResource extends AbstractResource
             throw new UnexpectedResponseException($response, $data['message'] ?? 'Unexpected response schema');
         }
 
-        $code = (int) $data['code'];
-
-        if (in_array($code, static::AUTH_ERROR_CODES, true)) {
-            throw new AuthenticationException($data['description'] ?? '', $data['message'] ?? '', $code);
+        if ($response->getStatusCode() === 401) {
+            throw new AuthenticationException('', $data['message'] ?? '', $data['code']);
         }
 
         /** @psalm-suppress ArgumentTypeCoercion */
