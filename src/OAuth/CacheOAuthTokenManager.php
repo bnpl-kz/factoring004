@@ -44,13 +44,17 @@ class CacheOAuthTokenManager implements OAuthTokenManagerInterface
         }
 
         if ($tokenData) {
-            return OAuthToken::createFromArray($tokenData);
+            $token = OAuthToken::createFromArray($tokenData);
+
+            if ($token->getAccessExpiresAt() > time()) {
+                return $token;
+            }
         }
 
         $token = $this->tokenManager->getAccessToken();
 
         try {
-            $this->cache->set($this->cacheKey, $token->toArray(), $token->getExpiresIn());
+            $this->cache->set($this->cacheKey, $token->toArray(), $token->getRefreshExpiresAt());
         } catch (InvalidArgumentException $e) {
             // do nothing
         }
@@ -61,7 +65,7 @@ class CacheOAuthTokenManager implements OAuthTokenManagerInterface
     /**
      * @psalm-suppress InvalidCatch
      */
-    private function clearCache(): void
+    public function clearCache(): void
     {
         try {
             $this->cache->delete($this->cacheKey);

@@ -18,10 +18,10 @@ class CacheOAuthTokenManagerTest extends TestCase
     {
         $cacheKey = 'key';
         $token = OAuthToken::createFromArray([
-            'access_token' => 'dGVzdA==',
-            'scope' => 'default',
-            'expires_in' => 3600,
-            'token_type' => 'Bearer',
+            'access' => 'dGVzdA==',
+            'accessExpiresAt' => 300,
+            'refresh' => 'dGVzdDE=',
+            'refreshExpiresAt' => 3600,
         ]);
 
         $manager = $this->createMock(OAuthTokenManagerInterface::class);
@@ -38,7 +38,7 @@ class CacheOAuthTokenManagerTest extends TestCase
 
         $cache->expects($this->once())
             ->method('set')
-            ->with($cacheKey, $token->toArray(), $token->getExpiresIn())
+            ->with($cacheKey, $token->toArray(), $token->getRefreshExpiresAt())
             ->willReturn(true);
 
         $cacheManager = new CacheOAuthTokenManager($manager, $cache, $cacheKey);
@@ -53,10 +53,10 @@ class CacheOAuthTokenManagerTest extends TestCase
     {
         $cacheKey = 'key';
         $token = OAuthToken::createFromArray([
-            'access_token' => 'dGVzdA==',
-            'scope' => 'default',
-            'expires_in' => 3600,
-            'token_type' => 'Bearer',
+            'access' => 'dGVzdA==',
+            'accessExpiresAt' => time() + 60,
+            'refresh' => 'dGVzdDE=',
+            'refreshExpiresAt' => time() + 3600,
         ]);
 
         $manager = $this->createMock(OAuthTokenManagerInterface::class);
@@ -82,10 +82,10 @@ class CacheOAuthTokenManagerTest extends TestCase
     {
         $cacheKey = 'key';
         $token = OAuthToken::createFromArray([
-            'access_token' => 'dGVzdA==',
-            'scope' => 'default',
-            'expires_in' => 3600,
-            'token_type' => 'Bearer',
+            'access' => 'dGVzdA==',
+            'accessExpiresAt' => 300,
+            'refresh' => 'dGVzdDE=',
+            'refreshExpiresAt' => 3600,
         ]);
 
         $manager = $this->createMock(OAuthTokenManagerInterface::class);
@@ -114,10 +114,10 @@ class CacheOAuthTokenManagerTest extends TestCase
     {
         $cacheKey = 'key';
         $token = OAuthToken::createFromArray([
-            'access_token' => 'dGVzdA==',
-            'scope' => 'default',
-            'expires_in' => 3600,
-            'token_type' => 'Bearer',
+            'access' => 'dGVzdA==',
+            'accessExpiresAt' => 300,
+            'refresh' => 'dGVzdDE=',
+            'refreshExpiresAt' => 3600,
         ]);
 
         $manager = $this->createMock(OAuthTokenManagerInterface::class);
@@ -129,7 +129,7 @@ class CacheOAuthTokenManagerTest extends TestCase
         $cache = $this->createMock(CacheInterface::class);
         $cache->expects($this->once())
             ->method('set')
-            ->with($cacheKey, $token->toArray(), $token->getExpiresIn())
+            ->with($cacheKey, $token->toArray(), $token->getRefreshExpiresAt())
             ->willThrowException(new class() extends \InvalidArgumentException implements InvalidArgumentException {});
 
         $cache->expects($this->once())
@@ -206,6 +206,21 @@ class CacheOAuthTokenManagerTest extends TestCase
 
         $cacheManager = new CacheOAuthTokenManager($manager, $cache, $cacheKey);
         $cacheManager->revokeToken();
+    }
+
+    public function testClearCache(): void
+    {
+        $cacheKey = 'key';
+        $manager = $this->createMock(OAuthTokenManagerInterface::class);
+
+        $cache = $this->createMock(CacheInterface::class);
+        $cache->expects($this->once())
+            ->method('delete')
+            ->with($cacheKey)
+            ->willReturn(true);
+
+        $cacheManager = new CacheOAuthTokenManager($manager, $cache, $cacheKey);
+        $cacheManager->clearCache();
     }
 }
 
