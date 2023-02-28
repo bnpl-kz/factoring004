@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace BnplPartners\Factoring004\OAuth;
 
 use BadMethodCallException;
-use BnplPartners\Factoring004\Auth\BasicAuth;
 use BnplPartners\Factoring004\Exception\OAuthException;
 use BnplPartners\Factoring004\Exception\TransportException;
 use BnplPartners\Factoring004\Transport\GuzzleTransport;
@@ -14,46 +13,47 @@ use InvalidArgumentException;
 
 class OAuthTokenManager implements OAuthTokenManagerInterface
 {
-    private const ACCESS_PATH = '/token';
-    private const REVOKE_PATH = '/revoke';
+    public const ACCESS_PATH = '/sign-in';
 
     private TransportInterface $transport;
     private string $baseUri;
-    private string $consumerKey;
-    private string $consumerSecret;
+    private string $username;
+    private string $password;
 
     public function __construct(
         string $baseUri,
-        string $consumerKey,
-        string $consumerSecret,
+        string $username,
+        string $password,
         ?TransportInterface $transport = null
     ) {
         if (!$baseUri) {
             throw new InvalidArgumentException('Base URI cannot be empty');
         }
 
-        if (!$consumerKey) {
-            throw new InvalidArgumentException('Consumer key cannot be empty');
+        if (!$username) {
+            throw new InvalidArgumentException('Username cannot be empty');
         }
 
-        if (!$consumerSecret) {
-            throw new InvalidArgumentException('Consumer secret cannot be empty');
+        if (!$password) {
+            throw new InvalidArgumentException('Password cannot be empty');
         }
 
         $this->transport = $transport ?? new GuzzleTransport();
         $this->baseUri = $baseUri;
-        $this->consumerKey = $consumerKey;
-        $this->consumerSecret = $consumerSecret;
+        $this->username = $username;
+        $this->password = $password;
     }
 
     public function getAccessToken(): OAuthToken
     {
         $this->transport->setBaseUri($this->baseUri);
-        $this->transport->setAuthentication(new BasicAuth($this->consumerKey, $this->consumerSecret));
 
         try {
-            $response = $this->transport->post(static::ACCESS_PATH, ['grant_type' => 'client_credentials'], [
-                'Content-Type' => 'application/x-www-form-urlencoded',
+            $response = $this->transport->post(static::ACCESS_PATH, [
+                'username' => $this->username,
+                'password' => $this->password,
+            ], [
+                'Content-Type' => 'application/json',
             ]);
         } catch (TransportException $e) {
             throw new OAuthException('Cannot generate an access token', 0, $e);
@@ -63,7 +63,7 @@ class OAuthTokenManager implements OAuthTokenManagerInterface
             return OAuthToken::createFromArray($response->getBody());
         }
 
-        throw new OAuthException('Cannot generate an access token');
+        throw new OAuthException($response->getBody()['message'] ?? 'Cannot generate an access token');
     }
 
     public function revokeToken(): void
