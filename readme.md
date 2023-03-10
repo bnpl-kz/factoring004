@@ -1,6 +1,7 @@
 # Factoring004 SDK
 
 - [Requirements](#requirements)
+- [Version compatibility](#version-compatibility)
 - [Installation](#installation)
 - [Authentication](#authentication)
 - [Usage](#usage)
@@ -26,6 +27,15 @@
 - PHP >=5.6
 - JSON extension
 - PSR-17, PSR-18 implementations (optional and PHP >=7.x only)
+
+## Version compatibility
+
+| Package version | PHP version   | Note                                                          |
+|-----------------|---------------|---------------------------------------------------------------|
+| 3.x             | \>= 7.4       | Latest version. Supported.                                    |
+| 2.x             | \>= 5.6 < 7.4 | Legacy version. Supported.                                    |
+| 1.x             | \>= 5.6 < 7.4 | Legacy version. Unsupported. <br/>Please upgrade to 2.x.      |
+| 0.x             | \>= 7.4       | Unstable and unsupported version. <br/>Please upgrade to 3.x. |
 
 ## Installation
 
