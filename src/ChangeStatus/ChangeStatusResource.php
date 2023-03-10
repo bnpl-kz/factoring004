@@ -29,7 +29,7 @@ class ChangeStatusResource extends AbstractResource
     {
         $response = $this->request(
             'PUT',
-            '/accounting/changeStatus/json',
+            '/accounting/v1/private/changeStatus/json',
             array_map(fn(MerchantsOrders $orders) => $orders->toArray(), $merchantOrders)
         );
 
