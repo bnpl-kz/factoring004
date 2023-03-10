@@ -74,12 +74,11 @@ abstract class AbstractResourceTest extends TestCase
     /**
      * @throws \BnplPartners\Factoring004\Exception\PackageException
      */
-    public function testWithMissingCredentialsError(): void
+    public function testWithAuthenticationFailed(): void
     {
         $data = [
-            'code' => '900902',
-            'message' => 'Missing Credentials',
-            'description' => 'Invalid Credentials. Make sure your API invocation call has a header',
+            'code' => 16,
+            'message' => 'Request unauthenticated with Bearer',
         ];
 
         $client = $this->createStub(ClientInterface::class);
@@ -89,135 +88,9 @@ abstract class AbstractResourceTest extends TestCase
         try {
             $this->callResourceMethod($client);
         } catch (AuthenticationException $e) {
-            $this->assertEquals((int) $data['code'], $e->getCode());
+            $this->assertEquals($data['code'], $e->getCode());
             $this->assertEquals($data['message'], $e->getMessage());
-            $this->assertEquals($data['description'], $e->getDescription());
-        }
-    }
-
-    /**
-     * @throws \BnplPartners\Factoring004\Exception\PackageException
-     */
-    public function testWithMissingCredentialsFault(): void
-    {
-        $data = [
-            'fault' => [
-                'code' => '900902',
-                'message' => 'Missing Credentials',
-                'description' => 'Invalid Credentials. Make sure your API invocation call has a header',
-            ],
-        ];
-
-        $client = $this->createStub(ClientInterface::class);
-        $client->method('send')
-            ->willReturn(new Response(401, ['Content-Type' => 'application/json'], json_encode($data)));
-
-        try {
-            $this->callResourceMethod($client);
-        } catch (AuthenticationException $e) {
-            $this->assertEquals((int) $data['fault']['code'], $e->getCode());
-            $this->assertEquals($data['fault']['message'], $e->getMessage());
-            $this->assertEquals($data['fault']['description'], $e->getDescription());
-        }
-    }
-
-    /**
-     * @throws \BnplPartners\Factoring004\Exception\PackageException
-     */
-    public function testWithInvalidCredentialsError(): void
-    {
-        $data = [
-            'code' => '900901',
-            'message' => 'Invalid Credentials',
-            'description' => 'Invalid Credentials. Make sure you have provided the correct security credentials',
-        ];
-
-        $client = $this->createStub(ClientInterface::class);
-        $client->method('send')
-            ->willReturn(new Response(401, ['Content-Type' => 'application/json'], json_encode($data)));
-
-        try {
-            $this->callResourceMethod($client);
-        } catch (AuthenticationException $e) {
-            $this->assertEquals((int) $data['code'], $e->getCode());
-            $this->assertEquals($data['message'], $e->getMessage());
-            $this->assertEquals($data['description'], $e->getDescription());
-        }
-    }
-
-    /**
-     * @throws \BnplPartners\Factoring004\Exception\PackageException
-     */
-    public function testWithInvalidCredentialsFault(): void
-    {
-        $data = [
-            'fault' => [
-                'code' => '900901',
-                'message' => 'Invalid Credentials',
-                'description' => 'Invalid Credentials. Make sure you have provided the correct security credentials',
-            ],
-        ];
-
-        $client = $this->createStub(ClientInterface::class);
-        $client->method('send')
-            ->willReturn(new Response(401, ['Content-Type' => 'application/json'], json_encode($data)));
-
-        try {
-            $this->callResourceMethod($client);
-        } catch (AuthenticationException $e) {
-            $this->assertEquals((int) $data['fault']['code'], $e->getCode());
-            $this->assertEquals($data['fault']['message'], $e->getMessage());
-            $this->assertEquals($data['fault']['description'], $e->getDescription());
-        }
-    }
-
-    /**
-     * @throws \BnplPartners\Factoring004\Exception\PackageException
-     */
-    public function testWithAccessTokenNotAllowError(): void
-    {
-        $data = [
-            'code' => '900910',
-            'message' => 'The access token does not allow you to access the requested resource',
-            'description' => 'The access token does not allow you to access the requested resource',
-        ];
-
-        $client = $this->createStub(ClientInterface::class);
-        $client->method('send')
-            ->willReturn(new Response(401, ['Content-Type' => 'application/json'], json_encode($data)));
-
-        try {
-            $this->callResourceMethod($client);
-        } catch (AuthenticationException $e) {
-            $this->assertEquals((int) $data['code'], $e->getCode());
-            $this->assertEquals($data['message'], $e->getMessage());
-            $this->assertEquals($data['description'], $e->getDescription());
-        }
-    }
-
-    /**
-     * @throws \BnplPartners\Factoring004\Exception\PackageException
-     */
-    public function testWithAccessTokenNotAllowFault(): void
-    {
-        $data = [
-            'fault' => [
-                'code' => '900910',
-                'message' => 'The access token does not allow you to access the requested resource',
-                'description' => 'The access token does not allow you to access the requested resource',
-            ],
-        ];
-
-        $client = $this->createStub(ClientInterface::class);
-        $client->method('send')
-            ->willReturn(new Response(401, ['Content-Type' => 'application/json'], json_encode($data)));
-
-        try {
-            $this->callResourceMethod($client);
-        } catch (AuthenticationException $e) {
-            $this->assertEquals((int) $data['fault']['code'], $e->getCode());
-            $this->assertEquals($data['fault']['message'], $e->getMessage());
-            $this->assertEquals($data['fault']['description'], $e->getDescription());
+            $this->assertEmpty($e->getDescription());
         }
     }
 

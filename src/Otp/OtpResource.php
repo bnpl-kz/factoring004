@@ -24,7 +24,7 @@ class OtpResource extends AbstractResource
      */
     public function checkOtp(CheckOtp $otp): DtoOtp
     {
-        $response = $this->postRequest('/accounting/checkOtp', $otp->toArray());
+        $response = $this->postRequest('/accounting/v1/private/checkOtp', $otp->toArray());
 
         if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
             return DtoOtp::createFromArray($response->getBody());
@@ -45,7 +45,7 @@ class OtpResource extends AbstractResource
      */
     public function sendOtp(SendOtp $otp): DtoOtp
     {
-        $response = $this->postRequest('/accounting/sendOtp', $otp->toArray());
+        $response = $this->postRequest('/accounting/v1/private/sendOtp', $otp->toArray());
 
         if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
             return DtoOtp::createFromArray($response->getBody());
@@ -66,7 +66,7 @@ class OtpResource extends AbstractResource
      */
     public function checkOtpReturn(CheckOtpReturn $otp): DtoOtp
     {
-        $response = $this->postRequest('/accounting/checkOtpReturn', $otp->toArray());
+        $response = $this->postRequest('/accounting/v1/private/checkOtpReturn', $otp->toArray());
 
         if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
             return DtoOtp::createFromArray($response->getBody());
@@ -87,7 +87,7 @@ class OtpResource extends AbstractResource
      */
     public function sendOtpReturn(SendOtpReturn $otp): DtoOtp
     {
-        $response = $this->postRequest('/accounting/sendOtpReturn', $otp->toArray());
+        $response = $this->postRequest('/accounting/v1/private/sendOtpReturn', $otp->toArray());
 
         if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
             return DtoOtp::createFromArray($response->getBody());
@@ -120,10 +120,8 @@ class OtpResource extends AbstractResource
                 throw new UnexpectedResponseException($response, $data['message'] ?? 'Unexpected response schema');
             }
 
-            $code = (int) $data['code'];
-
-            if (in_array($code, static::AUTH_ERROR_CODES, true)) {
-                throw new AuthenticationException($data['description'] ?? '', $data['message'] ?? '', $code);
+            if ($response->getStatusCode() === 401) {
+                throw new AuthenticationException('', $data['message'] ?? '', $data['code']);
             }
 
             /** @psalm-suppress ArgumentTypeCoercion */

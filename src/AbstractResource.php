@@ -12,7 +12,6 @@ use InvalidArgumentException;
 
 abstract class AbstractResource
 {
-    protected const AUTH_ERROR_CODES = [900901, 900902, 900910];
     protected const DEFAULT_HEADERS = [
         'Accept' => 'application/json',
         'Content-Type' => 'application/json',
