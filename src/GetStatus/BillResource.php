@@ -15,61 +15,28 @@ use BnplPartners\Factoring004\Exception\UnexpectedResponseException;
 use BnplPartners\Factoring004\Response\ErrorResponse;
 use BnplPartners\Factoring004\Transport\ResponseInterface;
 
-class GetStatusResource extends AbstractResource
+class BillResource extends AbstractResource
 {
-    private string $byPreappPath = '/bnpl/preapp/%s/status';
-    private string $byBillNumberPath = '/bnpl/bill/%s/status';
-
     /**
      * @throws ErrorResponseException
      * @throws NetworkException
-     * @throws EndpointUnavailableException
      * @throws DataSerializationException
      * @throws UnexpectedResponseException
-     * @throws TransportException
+     * @throws EndpointUnavailableException
      * @throws AuthenticationException
+     * @throws TransportException
      */
-    private function getStatus(string $path): GetStatusResponse
+    public function getStatus(string $orderID): StatusResponse
     {
-        $response = $this->request('GET', $path);
+        $response = $this->request('GET', sprintf('/bnpl/bill/%s/status', $orderID));
 
         if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
-            return GetStatusResponse::create($response->getBody());
+            return StatusResponse::create($response->getBody());
         }
 
         $this->handleClientError($response);
 
         throw new EndpointUnavailableException($response);
-    }
-
-    /**
-     * @throws ErrorResponseException
-     * @throws NetworkException
-     * @throws DataSerializationException
-     * @throws UnexpectedResponseException
-     * @throws EndpointUnavailableException
-     * @throws AuthenticationException
-     * @throws TransportException
-     */
-    public function getStatusByOrderID(string $orderID): GetStatusResponse
-    {
-        $path = sprintf($this->byBillNumberPath, $orderID);
-        return $this->getStatus($path);
-    }
-
-    /**
-     * @throws ErrorResponseException
-     * @throws NetworkException
-     * @throws EndpointUnavailableException
-     * @throws DataSerializationException
-     * @throws UnexpectedResponseException
-     * @throws TransportException
-     * @throws AuthenticationException
-     */
-    public function getStatusByPreappID(string $preappID): GetStatusResponse
-    {
-        $path = sprintf($this->byPreappPath, $preappID);
-        return $this->getStatus($path);
     }
 
     /**

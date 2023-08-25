@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BnplPartners\Factoring004\GetStatus;
 
-class GetStatusResponse
+class StatusResponse
 {
     private string $status;
 
@@ -13,7 +13,12 @@ class GetStatusResponse
         $this->status = $status;
     }
 
-    public static function create(array $response): GetStatusResponse
+    /**
+     * @param array<string, string> $response
+     * @psalm-param array{status: string} $response
+     * @return StatusResponse
+     */
+    public static function create(array $response): StatusResponse
     {
         return new self($response['status'] ?? "");
     }

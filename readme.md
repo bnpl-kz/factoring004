@@ -341,13 +341,13 @@ var_dump($response->toArray(), json_encode($response));
 #### Get status by preapp id
 
 ```php
-$status = $api->getStatus->getStatusByPreappID($preappID)->getStatus();
+$status = $api->preApps->getStatus($preappID)->getStatus();
 ```
 
 #### Get status by order id
 
 ```php
-$status = $api->getStatus->getStatusByOrderID($orderID)->getStatus();
+$status = $api->bill->getStatus($orderID)->getStatus();
 ```
 
 ### Delivery endpoints

@@ -6,10 +6,15 @@ namespace BnplPartners\Factoring004\PreApp;
 
 use BnplPartners\Factoring004\AbstractResource;
 use BnplPartners\Factoring004\Exception\AuthenticationException;
+use BnplPartners\Factoring004\Exception\DataSerializationException;
 use BnplPartners\Factoring004\Exception\EndpointUnavailableException;
 use BnplPartners\Factoring004\Exception\ErrorResponseException;
+use BnplPartners\Factoring004\Exception\NetworkException;
+use BnplPartners\Factoring004\Exception\TransportException;
 use BnplPartners\Factoring004\Exception\UnexpectedResponseException;
 use BnplPartners\Factoring004\Exception\ValidationException;
+use BnplPartners\Factoring004\GetStatus\BillResource;
+use BnplPartners\Factoring004\GetStatus\StatusResponse;
 use BnplPartners\Factoring004\Response\ErrorResponse;
 use BnplPartners\Factoring004\Response\PreAppResponse;
 use BnplPartners\Factoring004\Response\ValidationErrorResponse;
@@ -18,6 +23,30 @@ use BnplPartners\Factoring004\Transport\ResponseInterface;
 class PreAppResource extends AbstractResource
 {
     private string $preappPath = '/bnpl/v3/preapp';
+
+
+    /**
+     * @throws ValidationException
+     * @throws ErrorResponseException
+     * @throws NetworkException
+     * @throws DataSerializationException
+     * @throws EndpointUnavailableException
+     * @throws UnexpectedResponseException
+     * @throws TransportException
+     * @throws AuthenticationException
+     */
+    public function getStatus(string $preappId): StatusResponse
+    {
+        $response = $this->request('GET', sprintf('/bnpl/preapp/%s/status', $preappId));
+
+        if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
+            return StatusResponse::create($response->getBody());
+        }
+
+        $this->handleClientError($response);
+
+        throw new EndpointUnavailableException($response);
+    }
 
     public function setPreappPath(string $preappPath): PreAppResource
     {

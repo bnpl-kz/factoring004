@@ -6,7 +6,7 @@ namespace BnplPartners\Factoring004;
 
 use BnplPartners\Factoring004\Auth\AuthenticationInterface;
 use BnplPartners\Factoring004\ChangeStatus\ChangeStatusResource;
-use BnplPartners\Factoring004\GetStatus\GetStatusResource;
+use BnplPartners\Factoring004\GetStatus\BillResource;
 use BnplPartners\Factoring004\Otp\OtpResource;
 use BnplPartners\Factoring004\PreApp\PreAppResource;
 use BnplPartners\Factoring004\Transport\GuzzleTransport;
@@ -23,7 +23,7 @@ class Api
     private PreAppResource $preApps;
     private OtpResource $otp;
     private ChangeStatusResource $changeStatus;
-    private GetStatusResource $getStatus;
+    private BillResource $bill;
 
     public function __construct(
         string $baseUri,
@@ -35,7 +35,7 @@ class Api
         $this->preApps = new PreAppResource($transport, $baseUri, $authentication);
         $this->otp = new OtpResource($transport, $baseUri, $authentication);
         $this->changeStatus = new ChangeStatusResource($transport, $baseUri, $authentication);
-        $this->getStatus = new GetStatusResource($transport, $baseUri, $authentication);
+        $this->bill = new BillResource($transport, $baseUri, $authentication);
     }
 
     public static function create(
@@ -60,8 +60,8 @@ class Api
             return $this->changeStatus;
         }
 
-        if ($name === 'getStatus') {
-            return $this->getStatus;
+        if ($name === 'bill') {
+            return $this->bill;
         }
 
         throw new OutOfBoundsException("Property {$name} does not exist");
