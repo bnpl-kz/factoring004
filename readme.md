@@ -336,6 +336,20 @@ var_dump($response->getStatus(), $response->getPreAppId(), $response->getRedirec
 var_dump($response->toArray(), json_encode($response));
 ```
 
+### Get preapp status
+
+#### Get status by preapp id
+
+```php
+$status = $api->preApps->getStatus($preappID)->getStatus();
+```
+
+#### Get status by order id
+
+```php
+$status = $api->bill->getStatus($orderID)->getStatus();
+```
+
 ### Delivery endpoints
 
 #### Send OTP
