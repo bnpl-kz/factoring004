@@ -4,6 +4,7 @@ namespace BnplPartners\Factoring004;
 
 use BnplPartners\Factoring004\Auth\AuthenticationInterface;
 use BnplPartners\Factoring004\ChangeStatus\ChangeStatusResource;
+use BnplPartners\Factoring004\GetStatus\BillResource;
 use BnplPartners\Factoring004\Otp\OtpResource;
 use BnplPartners\Factoring004\PreApp\PreAppResource;
 use BnplPartners\Factoring004\Transport\GuzzleTransport;
@@ -31,6 +32,11 @@ class Api
     private $changeStatus;
 
     /**
+     * @var \BnplPartners\Factoring004\GetStatus\BillResource
+     */
+    private $bill;
+
+    /**
      * @param string $baseUri
      * @param \BnplPartners\Factoring004\Auth\AuthenticationInterface|null $authentication
      * @param \BnplPartners\Factoring004\Transport\TransportInterface|null $transport
@@ -45,6 +51,7 @@ class Api
         $this->preApps = new PreAppResource($transport, $baseUri, $authentication);
         $this->otp = new OtpResource($transport, $baseUri, $authentication);
         $this->changeStatus = new ChangeStatusResource($transport, $baseUri, $authentication);
+        $this->bill = new BillResource($transport, $baseUri, $authentication);
     }
 
     /**
@@ -77,6 +84,10 @@ class Api
 
         if ($name === 'changeStatus') {
             return $this->changeStatus;
+        }
+
+        if ($name === 'bill') {
+            return $this->bill;
         }
 
         throw new OutOfBoundsException("Property {$name} does not exist");
