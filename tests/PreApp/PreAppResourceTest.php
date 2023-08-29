@@ -4,6 +4,7 @@ namespace BnplPartners\Factoring004\PreApp;
 
 use BnplPartners\Factoring004\AbstractResourceTest;
 use BnplPartners\Factoring004\Exception\ValidationException;
+use BnplPartners\Factoring004\GetStatus\StatusResponse;
 use BnplPartners\Factoring004\Response\PreAppResponse;
 use BnplPartners\Factoring004\Response\ValidationErrorResponse;
 use GuzzleHttp\ClientInterface;
@@ -31,6 +32,19 @@ class PreAppResourceTest extends AbstractResourceTest
         $response = $preApp->preApp(PreAppMessage::createFromArray(PreAppMessageTest::REQUIRED_DATA));
 
         $this->assertEquals(PreAppResponse::createFromArray($data), $response);
+    }
+
+    public function testGetStatus()
+    {
+        $client = $this->createStub(ClientInterface::class);
+        $client->method('send')
+            ->willReturn(new Response(200, [], json_encode(['status' => 'received'])));
+
+        $resource = new PreAppResource($this->createTransport($client), self::BASE_URI);
+        $response = $resource->getStatus('aaaaaaaa-0000-1111-2222-bbbbbbbbbbbb');
+        $expected = StatusResponse::create(['status' => 'received']);
+
+        $this->assertEquals($expected, $response);
     }
 
     /**
