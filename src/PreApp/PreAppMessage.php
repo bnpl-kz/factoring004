@@ -26,6 +26,7 @@ class PreAppMessage implements ArrayInterface
      * @var \BnplPartners\Factoring004\PreApp\Item[]
      */
     private array $items;
+    private PaymentType $paymentType;
 
     /**
      * @param \BnplPartners\Factoring004\PreApp\Item[] $items
@@ -54,6 +55,7 @@ class PreAppMessage implements ArrayInterface
         $this->successRedirect = $successRedirect;
         $this->postLink = $postLink;
         $this->items = $items;
+        $this->paymentType = PaymentType::default();
     }
 
     /**
@@ -135,6 +137,10 @@ class PreAppMessage implements ArrayInterface
             $object->setDeliveryPoint(DeliveryPoint::createFromArray($data['deliveryPoint']));
         }
 
+        if (isset($data['paymentType'])) {
+            $object->setPaymentType($data['paymentType']);
+        }
+
         return $object;
     }
 
@@ -169,6 +175,12 @@ class PreAppMessage implements ArrayInterface
     public function setDeliveryDate(DateTimeInterface $deliveryDate): PreAppMessage
     {
         $this->deliveryDate = $deliveryDate;
+        return $this;
+    }
+
+    public function setPaymentType(string $paymentType): PreAppMessage
+    {
+        $this->paymentType = PaymentType::from($paymentType);
         return $this;
     }
 
@@ -235,6 +247,11 @@ class PreAppMessage implements ArrayInterface
         return $this->items;
     }
 
+    public function getPaymentType(): PaymentType
+    {
+        return $this->paymentType;
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -257,6 +274,7 @@ class PreAppMessage implements ArrayInterface
             'phoneNumber' => $this->getPhoneNumber(),
             'deliveryPoint' => $deliveryPoint ? $deliveryPoint->toArray() : null,
             'items' => array_map(fn(Item $item) => $item->toArray(), $this->getItems()),
+            'paymentType' => $this->getPaymentType()->getValue()
         ]);
     }
 }
