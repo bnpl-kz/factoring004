@@ -8,6 +8,7 @@ use DateTime;
 use DateTimeInterface;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use UnexpectedValueException;
 
 class PreAppMessageTest extends TestCase
 {
@@ -22,6 +23,7 @@ class PreAppMessageTest extends TestCase
         'billNumber' => '1',
         'billAmount' => 6000,
         'itemsQuantity' => 1,
+        'paymentType' => '0-0-4',
         'successRedirect' => 'http://example.com/success',
         'postLink' => 'http://example.com/internal',
         'items' => [
@@ -272,6 +274,23 @@ class PreAppMessageTest extends TestCase
         $this->assertEquals([Item::createFromArray(static::REQUIRED_DATA['items'][0])], $this->message->getItems());
     }
 
+    public function testGetPaymentType(): void
+    {
+        $this->assertEquals('0-0-4', $this->message->getPaymentType()->getValue());
+    }
+
+    public function testSetPaymentType(): void
+    {
+        $this->message->setPaymentType('0-0-4');
+        $this->assertEquals('0-0-4', $this->message->getPaymentType()->getValue());
+
+        $this->message->setPaymentType('PAD');
+        $this->assertEquals('PAD', $this->message->getPaymentType()->getValue());
+
+        $this->expectException(UnexpectedValueException::class);
+        $this->message->setPaymentType('asfs');
+    }
+
     public function testToArray(): void
     {
         $expected = static::REQUIRED_DATA;
@@ -282,6 +301,7 @@ class PreAppMessageTest extends TestCase
         $this->message->setExpiresAt($expiresAt = new DateTime());
         $this->message->setDeliveryDate($deliveryDate = new DateTime());
         $this->message->setDeliveryPoint(DeliveryPoint::createFromArray(['flat' => '10', 'house' => '15']));
+        $this->message->setPaymentType('0-0-4');
 
         $expected = static::REQUIRED_DATA + [
             'failRedirect' => 'http://example.com/failed',
@@ -297,6 +317,7 @@ class PreAppMessageTest extends TestCase
                 'region' => '',
             ],
             'items' => static::REQUIRED_DATA['items'],
+            'paymentType' => '0-0-4'
         ];
         $this->assertEquals($expected, $this->message->toArray());
     }
