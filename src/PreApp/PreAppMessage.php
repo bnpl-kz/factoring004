@@ -57,6 +57,10 @@ class PreAppMessage implements ArrayInterface
      * @var \BnplPartners\Factoring004\PreApp\Item[]
      */
     private $items;
+    /**
+     * @var \BnplPartners\Factoring004\PreApp\PaymentType|null
+     */
+    private $paymentType;
 
     /**
      * @param \BnplPartners\Factoring004\PreApp\Item[] $items
@@ -90,6 +94,7 @@ class PreAppMessage implements ArrayInterface
         $this->successRedirect = $successRedirect;
         $this->postLink = $postLink;
         $this->items = $items;
+        $this->paymentType = PaymentType::defaultValue();
     }
 
     /**
@@ -166,6 +171,10 @@ class PreAppMessage implements ArrayInterface
             $object->setDeliveryPoint(DeliveryPoint::createFromArray($data['deliveryPoint']));
         }
 
+        if (isset($data['paymentType'])) {
+            $object->setPaymentType($data['paymentType']);
+        }
+
         return $object;
     }
 
@@ -217,6 +226,19 @@ class PreAppMessage implements ArrayInterface
     public function setDeliveryDate(DateTimeInterface $deliveryDate)
     {
         $this->deliveryDate = $deliveryDate;
+        return $this;
+    }
+
+    /**
+     * @return \BnplPartners\Factoring004\PreApp\PreAppMessage
+     */
+    public function setPaymentType($paymentType)
+    {
+        if (!in_array($paymentType, PaymentType::toArray(), true)) {
+            throw new \UnexpectedValueException(sprintf('Invalid payment type: %s', $paymentType));
+        }
+
+        $this->paymentType = PaymentType::from($paymentType);
         return $this;
     }
 
@@ -317,6 +339,14 @@ class PreAppMessage implements ArrayInterface
     }
 
     /**
+     * @return \BnplPartners\Factoring004\PreApp\PaymentType|null
+     */
+    public function getPaymentType()
+    {
+        return $this->paymentType;
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function toArray()
@@ -340,6 +370,7 @@ class PreAppMessage implements ArrayInterface
             'items' => array_map(function (Item $item) {
                 return $item->toArray();
             }, $this->getItems()),
+            'paymentType' => $this->getPaymentType()->getValue()
         ]);
     }
 }

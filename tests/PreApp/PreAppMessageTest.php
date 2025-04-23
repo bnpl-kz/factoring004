@@ -5,6 +5,7 @@ namespace BnplPartners\Factoring004\PreApp;
 use BnplPartners\Factoring004\AbstractTestCase;
 use DateTime;
 use InvalidArgumentException;
+use UnexpectedValueException;
 
 class PreAppMessageTest extends AbstractTestCase
 {
@@ -19,6 +20,7 @@ class PreAppMessageTest extends AbstractTestCase
         'billNumber' => '1',
         'billAmount' => 6000,
         'itemsQuantity' => 1,
+        'paymentType' => '0-0-4',
         'successRedirect' => 'http://example.com/success',
         'postLink' => 'http://example.com/internal',
         'items' => [
@@ -296,6 +298,21 @@ class PreAppMessageTest extends AbstractTestCase
         $this->assertEquals([Item::createFromArray(static::REQUIRED_DATA['items'][0])], $this->getExpectedMessage()->getItems());
     }
 
+    public function testGetPaymentType()
+    {
+        $this->assertEquals('0-0-4', $this->getExpectedMessage()->getPaymentType()->getValue());
+    }
+
+    public function testSetPaymentType()
+    {
+        $this->assertEquals('0-0-4', $this->getExpectedMessage()->setPaymentType('0-0-4')->getPaymentType()->getValue());
+
+        $this->assertEquals('PAD', $this->getExpectedMessage()->setPaymentType('PAD')->getPaymentType()->getValue());
+
+        $this->expectException(UnexpectedValueException::class);
+        $this->getExpectedMessage()->setPaymentType('asfs');
+    }
+
     /**
      * @return void
      */
@@ -309,7 +326,8 @@ class PreAppMessageTest extends AbstractTestCase
             ->setPhoneNumber('77771234567')
             ->setExpiresAt($expiresAt = new DateTime())
             ->setDeliveryDate($deliveryDate = new DateTime())
-            ->setDeliveryPoint(DeliveryPoint::createFromArray(['flat' => '10', 'house' => '15']));
+            ->setDeliveryPoint(DeliveryPoint::createFromArray(['flat' => '10', 'house' => '15']))
+            ->setPaymentType('0-0-4');
 
         $expected = static::REQUIRED_DATA + [
             'failRedirect' => 'http://example.com/failed',
@@ -325,6 +343,7 @@ class PreAppMessageTest extends AbstractTestCase
                 'region' => '',
             ],
             'items' => static::REQUIRED_DATA['items'],
+            'paymentType' => '0-0-4'
         ];
         $this->assertEquals($expected, $message->toArray());
     }
